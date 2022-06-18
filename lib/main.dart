@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/function/movies.dart';
 import 'package:myapp/pages/moviesscreen.dart';
-import 'package:myapp/pages/secondpage.dart';
 import 'package:myapp/function/apidata.dart';
 
 void main() {
