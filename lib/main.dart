@@ -4,8 +4,9 @@ import 'package:myapp/pages/moviesscreen.dart';
 import 'package:myapp/function/apidata.dart';
 
 void main() {
-  runApp(const MaterialApp(
+  runApp( MaterialApp(
     title: 'Navigation Basics',
+    theme: ThemeData(fontFamily:'Roboto' ),
     debugShowCheckedModeBanner: false,
     home: FirstRoute(),
   ));
