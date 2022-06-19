@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:myapp/function/movies.dart';
 import 'package:myapp/pages/moviesscreen.dart';
@@ -8,13 +6,13 @@ import 'package:myapp/function/apidata.dart';
 void main() {
   runApp(const MaterialApp(
     title: 'Navigation Basics',
+    debugShowCheckedModeBanner: false,
     home: FirstRoute(),
   ));
 }
 
 class FirstRoute extends StatefulWidget {
   const FirstRoute({super.key});
-
   @override
   State<FirstRoute> createState() => _FirstRouteState();
 }
@@ -31,8 +29,9 @@ class _FirstRouteState extends State<FirstRoute> {
   ];
 
   String errorMessage = 'Loading .....';
+
   void getdata() async {
-    apidata l = await loaddata(cat);
+    Apidata l = await loaddata(cat);
     if (l.error == null) {
       setState(() {
         list = l.data;
@@ -67,6 +66,16 @@ class _FirstRouteState extends State<FirstRoute> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Imdb Top movies list '),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  showSearch(
+                    context: context,
+                    delegate: MySearhDelegate(),
+                  );
+                },
+                icon: const Icon(Icons.search)),
+          ],
         ),
         body: SizedBox(
           height: height,
@@ -88,10 +97,12 @@ class _FirstRouteState extends State<FirstRoute> {
   }
 
   void navigate(context, Movies movies) {
-   
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MovieScreen(movies: movies,)),
+      MaterialPageRoute(
+          builder: (context) => MovieScreen(
+                movies: movies,
+              )),
     );
   }
 
@@ -109,15 +120,15 @@ class _FirstRouteState extends State<FirstRoute> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(errorMessage),
-            if(errorMessage=="No Internet")
-             ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  getdata();
-                });
-              },
-              child: const Text('Reload '),
-            ),
+            if (errorMessage == "No Internet")
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    getdata();
+                  });
+                },
+                child: const Text('Reload '),
+              ),
           ],
         ),
       ));
@@ -141,7 +152,7 @@ class _FirstRouteState extends State<FirstRoute> {
         ),
       );
 
-  Container movieCard(BuildContext context, Movies movies) {
+  Container movieCard(BuildContext context, movies) {
     double width = MediaQuery.of(context).size.width;
     return Container(
       margin: const EdgeInsets.all(2.0),
@@ -184,11 +195,12 @@ class _FirstRouteState extends State<FirstRoute> {
                                   textAlign: TextAlign.start,
                                   // overflow: TextOverflow.ellipsis,
                                   // softWrap: false,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 25,
                                       fontWeight: FontWeight.bold),
                                 ),
                               )),
+                          textcontainer("Rankings:${movies.rank}"),
                           textcontainer("Year:${movies.year}"),
                           Row(children: [
                             textcontainer("Imdb Rating:${movies.imDbRating}"),
@@ -209,7 +221,7 @@ class _FirstRouteState extends State<FirstRoute> {
                                   textAlign: TextAlign.start,
                                   // overflow: TextOverflow.ellipsis,
                                   // softWrap: false,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 17,
                                   ),
                                 ),
@@ -277,6 +289,67 @@ class _FirstRouteState extends State<FirstRoute> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class MySearhDelegate extends SearchDelegate {
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    // TOD: implement buildActions
+    // throw UnimplementedError();
+    return [
+      IconButton(
+          onPressed: () {
+            if (query.isEmpty) {
+              close(context, null);
+            } else {
+              query = '';
+            }
+            query = '';
+          },
+          icon: const Icon(Icons.clear)),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    // TOD: implement buildLeading
+    // throw UnimplementedError();
+    return (IconButton(
+      onPressed: () => {close(context, null)},
+      icon: const Icon(Icons.arrow_back),
+    ));
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // TOD: implement buildResults
+    // throw UnimplementedError();
+    return (Center(
+      child: Text(
+        query,
+        style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
+      ),
+    ));
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> suggestions = [];
+
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (BuildContext context, int index) {
+        final suggestion = suggestions[index];
+        return ListTile(
+          title: Text(suggestion),
+          onTap: () {
+            query = suggestion;
+            showResults(context);
+          },
+        );
+      },
     );
   }
 }
